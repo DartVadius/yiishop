@@ -13,7 +13,8 @@ return [
     'showScriptName' => false,
     'rules' => [
         '' => 'site/index',
-        '<_a:about|contact|login|signup>' => 'site/<_a>',
+        '<_a:about|contact>' => 'site/<_a>',
+        '<_a:login|signup>' => 'auth/<_a>',
         '<_c:[\w\-]+>' => '<_c>/index',
         '<_c:[\w\-]+>/<id:\d+>' => '<_c>/view',
         '<_c:[\w\-]+>/<_a:[\w\-]+>' => '<_c>/<_a>',

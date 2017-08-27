@@ -8,7 +8,7 @@
 
 use yii\helpers\Html;
 
-/* @var $user \common\entities\User */
+/* @var $user \core\entities\user\User */
 /* @var $this yii\web\View */
 
 $confirm = Yii::$app->urlManager->createAbsoluteUrl(['site/confirm', 'token' => $user->email_confirm_token]);

@@ -18,8 +18,9 @@ return [
             'cookieValidationKey' => $params['cookieValidationKey']
         ],
         'user' => [
-            'identityClass' => 'common\entities\User',
+            'identityClass' => 'core\entities\user\User',
             'enableAutoLogin' => true,
+            'loginUrl' => ['auth/login'],
             'identityCookie' => [
                 'name' => '_identity-common',
                 'httpOnly' => true,
@@ -54,7 +55,7 @@ return [
     ],
     'as access' => [
         'class' => 'yii\filters\AccessControl',
-        'except' => ['site/login', 'site/error'],
+        'except' => ['auth/login', 'site/error'],
         'rules' => [
             [
                 'allow' => true,
