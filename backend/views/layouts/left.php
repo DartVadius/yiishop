@@ -30,8 +30,9 @@
             [
                 'options' => ['class' => 'sidebar-menu'],
                 'items' => [
-                    ['label' => 'Menu yiishop', 'options' => ['class' => 'header']],
-                    ['label' => 'Users', 'icon' => 'file-code-o', 'url' => ['user/index']],
+                    ['label' => 'Меню магазина', 'options' => ['class' => 'header']],
+                    ['label' => 'Пользователи', 'icon' => 'file-code-o', 'url' => ['user/index'], 'active' => $this->context->id === 'user'],
+//                    ['label' => 'Пользователи', 'icon' => 'file-code-o', 'url' => ['user/index'], 'active' => Yii::$app->controller->id === 'user'],
                 ],
             ]
         ) ?>

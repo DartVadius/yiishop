@@ -77,7 +77,7 @@ class User extends ActiveRecord implements IdentityInterface {
 
     public static function signupByNetwork($network, $identity) {
         $user = new User();
-        $user->username = 'anonymous user   ';
+//        $user->username = 'anonymous user ' . time();
         $user->created_at = time();
         $user->status = self::STATUS_ACTIVE;
         $user->generateAuthKey();
