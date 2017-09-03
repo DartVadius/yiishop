@@ -21,7 +21,7 @@ class NetworkController extends Controller {
     public function actions() {
         return [
             'auth' => [
-                'class' => AuthAction::class,
+                'class' => AuthAction::className(),
                 'successCallback' => [$this, 'onAuthSuccess'],
                 'successUrl' => Url::to(['cabinet/index/index'])
             ],

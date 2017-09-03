@@ -1,0 +1,24 @@
+Продукты сущности:
+Товары /shop/products
+Бренды /shop/brands
+Производители /shop/manufacturers
+Категории   /shop/categories
+Теги /shop/tags
+Характеристики /shop/characteristics
+Отзывы /shop/reviews - only Read
+Галереи /shop/galleries
+
+Товары:
+    фото                                    class Photo
+    модификации                             class Modification
+    галерея                                 one-to-one      gallery                     gallery_id, product_id
+    привязка к основной категории           many-to-one                                 category_id
+    привязка к дополнительным категориям    many-to-many    product_category            product_id, category_id
+    привязка к тегам                        many-to-many    product_tag                 product_id, tag-id
+    привязка к характеристикам              many-to-many    product_characteristic      product_id, char_id, value
+    сопутствующие товары                    many-to-many    product_additional_product  product_id, related_product_id
+    отзывы                                  class Review
+    рейтинг                                 rating
+
+Галереи:
+    фотографии                              many-to-many   gallery_photo               gallery_id, photo_id
