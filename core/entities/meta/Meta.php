@@ -8,7 +8,9 @@
 
 namespace core\entities\meta;
 
-class Meta {
+use yii\db\ActiveRecord;
+
+class Meta extends ActiveRecord {
     public $title;
     public $description;
     public $keywords;

@@ -35,4 +35,8 @@ class TagRepository {
             throw new \DomainException('Remove error');
         }
     }
+
+    public function findByName($name): ?Tag {
+        return Tag::findOne(['name' => $name]);
+    }
 }

@@ -10,6 +10,7 @@ namespace core\forms\management;
 
 
 use yii\base\Model;
+use yii\helpers\ArrayHelper;
 
 abstract class CompositeForm extends Model {
     /**
@@ -23,9 +24,9 @@ abstract class CompositeForm extends Model {
         $ok = parent::load($data, $formName);
         foreach ($this->forms as $name => $form) {
             if (is_array($form)) {
-                $ok = Model::loadMultiple($form, $data, $formName === null ? null : $name) && $ok;
+                $ok = Model::loadMultiple($form, $data, $formName ? null : $name) && $ok;
             } else {
-                $ok = $form->load($data, $formName === null ? null : $name) && $ok;
+                $ok = $form->load($data, $formName !== '' ? null : $name) && $ok;
             }
 
         }
@@ -56,7 +57,7 @@ abstract class CompositeForm extends Model {
         if (in_array($name, $this->internalForms(), true)){
             $this->forms[$name] = $value;
         } else {
-            return parent::__set($name, $value);
+            parent::__set($name, $value);
         }
     }
     public function __isset($name) {
