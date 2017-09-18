@@ -28,7 +28,7 @@ class Photo extends ActiveRecord {
     }
 
     public function isIdEqualTo($id) {
-        return $this->id === $id;
+        return $this->id == $id;
     }
 
     public static function tableName() {

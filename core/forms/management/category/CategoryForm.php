@@ -13,15 +13,16 @@ use core\entities\category\Category;
 use core\forms\management\CompositeForm;
 use core\forms\management\MetaForm;
 use core\validators\SlugValidator;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class CategoryForm
  *
- * @property integer $id
- * @property string $name
- * @property string $slug
- * @property string $title
- * @property string $description
+ * @property integer  $id
+ * @property string   $name
+ * @property string   $slug
+ * @property string   $title
+ * @property string   $description
  * @property MetaForm $meta
  *
  *
@@ -32,7 +33,6 @@ class CategoryForm extends CompositeForm {
     public $title;
     public $description;
     public $parentId;
-    public $meta;
 
     private $_category;
 
@@ -60,6 +60,12 @@ class CategoryForm extends CompositeForm {
             ['slug', SlugValidator::className()],
             [['name', 'slug'], 'unique', 'targetClass' => Category::class, 'filter' => $this->_category ? ['<>', 'id', $this->_category->id] : null],
         ];
+    }
+
+    public function parentCategoriesList(): array {
+        return ArrayHelper::map(Category::find()->orderBy('lft')->asArray()->all(), 'id', function (array $category) {
+            return ($category['depth'] > 1 ? str_repeat('-- ', $category['depth'] - 1) . ' ' : '') . $category['name'];
+        });
     }
 
     public function internalForms() {

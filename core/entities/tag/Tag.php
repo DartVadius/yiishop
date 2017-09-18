@@ -11,10 +11,14 @@ namespace core\entities\tag;
 
 use yii\db\ActiveRecord;
 
+/**
+ * Class Tag
+ *
+ * @property integer $id
+ * @property string $name
+ * @property string $slug
+ */
 class Tag extends ActiveRecord {
-
-    public $name;
-    public $slug;
 
     public static function create($name, $slug) {
         $tag = new static();

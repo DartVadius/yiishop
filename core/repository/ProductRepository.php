@@ -35,4 +35,13 @@ class ProductRepository {
             throw new \DomainException('Remove error');
         }
     }
+
+    public function existsByBrand($id) {
+        return Product::find()->andWhere(['brand_id' => $id])->exists();
+    }
+
+    public function existsByMainCategory($id): bool {
+        return Product::find()->andWhere(['category_id' => $id])->exists();
+    }
+
 }

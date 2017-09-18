@@ -16,9 +16,6 @@ use paulzi\nestedsets\NestedSetsBehavior;
 use yii\db\ActiveRecord;
 
 /**
- * Class Category
- *
- *
  * @property integer $id
  * @property string $name
  * @property string $slug
@@ -30,19 +27,15 @@ use yii\db\ActiveRecord;
  * @property Meta $meta
  *
  * @property Category $parent
+ * @property Category[] $parents
+ * @property Category[] $children
+ * @property Category $prev
+ * @property Category $next
+ * @mixin NestedSetsBehavior
  */
 
 class Category extends ActiveRecord {
-    public $id;
-    public $name;
-    public $slug;
-    public $title;
-    public $description;
-    public $lft;
-    public $rgt;
-    public $depth;
     public $meta;
-    public $parent;
 
     public static function create($name, $slug, $title, $description, Meta $meta) {
         $category = new static();
@@ -51,6 +44,7 @@ class Category extends ActiveRecord {
         $category->title = $title;
         $category->description = $description;
         $category->meta = $meta;
+        return $category;
     }
 
     public function edit($name, $slug, $title, $description, Meta $meta) {

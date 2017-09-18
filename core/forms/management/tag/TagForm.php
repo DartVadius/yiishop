@@ -6,7 +6,7 @@
  * Time: 14:26
  */
 
-namespace core\forms\management\user;
+namespace core\forms\management\tag;
 
 use core\entities\tag\Tag;
 use core\validators\SlugValidator;

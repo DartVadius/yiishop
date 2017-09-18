@@ -34,7 +34,7 @@ abstract class CompositeForm extends Model {
     }
 
     public function validate($attributeNames = null, $clearErrors = true) {
-        $parentNames = array_filter($attributeNames, 'is_string');
+        $parentNames = $attributeNames !== null ? array_filter($attributeNames, 'is_string') : null;
         $ok = parent::validate($parentNames, $clearErrors);
         foreach ($this->forms as $name => $form) {
             if (is_array($form)) {
@@ -47,21 +47,23 @@ abstract class CompositeForm extends Model {
         }
         return $ok;
     }
+
     public function __get($name) {
         if (isset($this->forms[$name])) {
             return $this->forms[$name];
         }
         return parent::__get($name);
     }
+
     public function __set($name, $value) {
-        if (in_array($name, $this->internalForms(), true)){
+        if (in_array($name, $this->internalForms(), true)) {
             $this->forms[$name] = $value;
         } else {
             parent::__set($name, $value);
         }
     }
-    public function __isset($name) {
 
+    public function __isset($name) {
         return isset($this->forms[$name]) || parent::__isset($name);
     }
 }

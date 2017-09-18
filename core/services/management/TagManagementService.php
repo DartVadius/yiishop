@@ -9,7 +9,7 @@
 namespace core\services\management;
 
 use core\entities\tag\Tag;
-use core\forms\management\user\TagForm;
+use core\forms\management\tag\TagForm;
 use core\repository\TagRepository;
 use yii\helpers\Inflector;
 

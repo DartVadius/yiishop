@@ -152,7 +152,7 @@ class Product extends ActiveRecord {
     public function addPhoto(UploadedFile $file) {
         $photos = $this->photos;
         $photos[] = Photo::create($file);
-        $this->setPhotos($photos);
+        $this->updatePhotos($photos);
     }
 
     public function removePhoto($id) {
@@ -168,17 +168,19 @@ class Product extends ActiveRecord {
     }
 
     public function removePhotos() {
-        $this->setPhotos([]);
+        $this->updatePhotos([]);
     }
 
     public function movePhotoUp($id) {
         $photos = $this->photos;
         /** @var Photo $photo */
         foreach ($photos as $i => $photo) {
-            if ($photo->isIdEqualTo($id) && $prev = $photos[$i - 1] ? $photos[$i - 1] : null) {
-                $photos[$i] = $prev;
-                $photos[$i - 1] = $photo;
-                $this->setPhotos($photos);
+            if ($photo->isIdEqualTo($id)) {
+                if ($prev = $photos[$i - 1] ? $photos[$i - 1] : null) {
+                    $photos[$i] = $prev;
+                    $photos[$i - 1] = $photo;
+                    $this->updatePhotos($photos);
+                }
                 return;
             }
         }
@@ -189,17 +191,19 @@ class Product extends ActiveRecord {
         $photos = $this->photos;
         /** @var Photo $photo */
         foreach ($photos as $i => $photo) {
-            if ($photo->isIdEqualTo($id) && $next = $photos[$i + 1] ? $photos[$i + 1] : null) {
-                $photos[$i] = $next;
-                $photos[$i + 1] = $photo;
-                $this->setPhotos($photos);
+            if ($photo->isIdEqualTo($id)) {
+                if ($next = $photos[$i + 1] ? $photos[$i + 1] : null) {
+                    $photos[$i] = $next;
+                    $photos[$i + 1] = $photo;
+                    $this->updatePhotos($photos);
+                }
                 return;
             }
         }
         throw new \DomainException('Photo is not found');
     }
 
-    private function setPhotos(array $photos) {
+    private function updatePhotos(array $photos) {
         /** @var Photo $photo */
         foreach ($photos as $i => $photo) {
             $photo->setSort($i);
@@ -390,23 +394,23 @@ class Product extends ActiveRecord {
 
 
     public function getBrand() {
-        return $this->hasOne(Brand::className(), ['id' => 'brand_id']);
+        return $this->hasOne(Brand::class, ['id' => 'brand_id']);
     }
 
     public function getCategory() {
-        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
     public function getCategoryAssignments() {
-        return $this->hasOne(CategoryAssignment::className(), ['product_id' => 'id']);
+        return $this->hasMany(CategoryAssignment::class, ['product_id' => 'id']);
     }
 
     public function getValues() {
-        return $this->hasOne(Value::className(), ['product_id' => 'id']);
+        return $this->hasMany(Value::class, ['product_id' => 'id']);
     }
 
     public function getPhotos() {
-        return $this->hasOne(Photo::className(), ['product_id' => 'id'])->orderBy('sort');
+        return $this->hasMany(Photo::class, ['product_id' => 'id'])->orderBy('sort');
     }
 
     public function getTagAssignments() {

@@ -21,15 +21,12 @@ use yii\db\ActiveRecord;
  * @property Meta $meta
  */
 class Brand extends ActiveRecord {
-    public $id;
-    public $name;
-    public $slug;
     public $meta;
 
     public static function create($name, $slug, Meta $meta) {
         $brand = new static();
-        $brand->name = $name;
-        $brand->slug = $slug;
+        $brand->name = (string)$name;
+        $brand->slug = (string)$slug;
         $brand->meta = $meta;
         return $brand;
     }
@@ -41,7 +38,7 @@ class Brand extends ActiveRecord {
     }
 
     public static function tableName() {
-        return '{{%brands}}';
+        return '{{%brand}}';
     }
 
     public function behaviors() {
