@@ -30,6 +30,7 @@ class CharacteristicManagementService {
             $form->sort
         );
         $this->characteristicRepository->save($characteristic);
+        return $characteristic;
     }
     public function edit($id, CharacteristicForm $form) {
         /** @var Characteristic $characteristic */

@@ -9,6 +9,7 @@
 namespace core\forms\management\product;
 
 
+use core\entities\category\Category;
 use core\entities\product\Product;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
@@ -29,7 +30,14 @@ class CategoryForm extends Model {
         return [
             ['main', 'required'],
             ['main', 'integer'],
-            ['additional', 'each', 'rules' => ['integer']],
+            ['additional', 'each', 'rule' => ['integer']],
         ];
     }
+
+    public function categoriesList(): array {
+        return ArrayHelper::map(Category::find()->andWhere(['>', 'depth', 0])->orderBy('lft')->asArray()->all(), 'id', function (array $category) {
+            return ($category['depth'] > 1 ? str_repeat('-- ', $category['depth'] - 1) . ' ' : '') . $category['name'];
+        });
+    }
+
 }

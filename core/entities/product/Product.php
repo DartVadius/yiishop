@@ -13,7 +13,9 @@ use core\entities\behaviors\MetaBehavior;
 use core\entities\brand\Brand;
 use core\entities\category\Category;
 use core\entities\characteristic\Value;
+use core\entities\EventTrait;
 use core\entities\meta\Meta;
+use core\entities\product\events\ProductAppearedInStock;
 use core\entities\tag\Tag;
 use core\entities\tag\TagAssignment;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
@@ -38,7 +40,6 @@ use yii\web\UploadedFile;
  *
  * @property Meta                 $meta
  * @property Brand                $brand
- * @property Category             $category
  * @property CategoryAssignment[] $categoryAssignments
  * @property Category[]           $categories
  * @property TagAssignment[]      $tagAssignments
@@ -52,21 +53,12 @@ use yii\web\UploadedFile;
  */
 class Product extends ActiveRecord {
 
+    use EventTrait;
+
     const STATUS_DRAFT = 0;
     const STATUS_ACTIVE = 1;
 
-    public $price_new;
-    public $price_old;
-    public $category_id;
-    public $brand_id;
-    public $code;
-    public $name;
-    public $description;
-    public $weight;
-    public $quantity;
     public $meta;
-    public $status;
-    public $created_at;
 
     public static function create($brandId, $categoryId, $code, $name, $description, $weight, $quantity, Meta $meta) {
         $product = new static();
@@ -97,8 +89,81 @@ class Product extends ActiveRecord {
         $this->price_old = $old;
     }
 
+    public function changeQuantity($quantity) {
+        if ($this->modifications) {
+            throw new \DomainException('Change modifications quantity.');
+        }
+        $this->setQuantity($quantity);
+    }
+
     public function changeMainCategory($id) {
         $this->category_id = $id;
+    }
+
+    public function activate(): void {
+        if ($this->isActive()) {
+            throw new \DomainException('Product is already active.');
+        }
+        $this->status = self::STATUS_ACTIVE;
+    }
+
+    public function draft(): void {
+        if ($this->isDraft()) {
+            throw new \DomainException('Product is already draft.');
+        }
+        $this->status = self::STATUS_DRAFT;
+    }
+
+    public function isActive(): bool {
+        return $this->status == self::STATUS_ACTIVE;
+    }
+
+
+    public function isDraft(): bool {
+        return $this->status == self::STATUS_DRAFT;
+    }
+
+    public function isAvailable(): bool {
+        return $this->quantity > 0;
+    }
+
+    public function canChangeQuantity(): bool {
+        return !$this->modifications;
+    }
+
+    public function canBeCheckout($modificationId, $quantity): bool {
+        if ($modificationId) {
+            return $quantity <= $this->getModification($modificationId)->quantity;
+        }
+        return $quantity <= $this->quantity;
+    }
+
+    public function checkout($modificationId, $quantity): void {
+        if ($modificationId) {
+            $modifications = $this->modifications;
+            foreach ($modifications as $i => $modification) {
+                if ($modification->isIdEqualTo($modificationId)) {
+                    $modification->checkout($quantity);
+                    $this->updateModifications($modifications);
+                    return;
+                }
+            }
+        }
+        if ($quantity > $this->quantity) {
+            throw new \DomainException('Only ' . $this->quantity . ' items are available.');
+        }
+        $this->setQuantity($this->quantity - 1);
+    }
+
+    private function setQuantity($quantity) {
+        if ($this->quantity == 0 && $quantity > 0) {
+            $this->recordEvent(new ProductAppearedInStock($this));
+        }
+        $this->quantity = $quantity;
+    }
+
+    public function getSeoTile() {
+        return $this->meta->title ? $this->meta->title : $this->name;
     }
 
     public function setValue($id, $value) {
@@ -209,6 +274,7 @@ class Product extends ActiveRecord {
             $photo->setSort($i);
         }
         $this->photos = $photos;
+        $this->populateRelation('mainPhoto', reset($photos));
     }
 
     public function assignTag($id) {
@@ -385,14 +451,6 @@ class Product extends ActiveRecord {
         $this->rating = $amount ? $total / $amount : null;
     }
 
-    private function setQuantity($quantity) {
-//        if ($this->quantity == 0 && $quantity > 0) {
-//            $this->recordEvent(new ProductAppearedInStock($this));
-//        }
-        $this->quantity = $quantity;
-    }
-
-
     public function getBrand() {
         return $this->hasOne(Brand::class, ['id' => 'brand_id']);
     }
@@ -456,4 +514,26 @@ class Product extends ActiveRecord {
             self::SCENARIO_DEFAULT => self::OP_ALL,
         ];
     }
+
+    public function beforeDelete() {
+        if (parent::beforeDelete()) {
+            foreach ($this->photos as $photo) {
+                $photo->delete();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function afterSave($insert, $changedAttributes) {
+        $related = $this->getRelatedRecords();
+        parent::afterSave($insert, $changedAttributes);
+        if (array_key_exists('mainPhoto', $related)) {
+            $this->updateAttributes(['main_photo_id' => $related['mainPhoto'] ? $related['mainPhoto']->id : null]);
+        }
+    }
+
+//    public static function find() {
+//        return new ProductQuery(static::class);
+//    }
 }

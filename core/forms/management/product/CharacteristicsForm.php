@@ -12,6 +12,7 @@ namespace core\forms\management\product;
 use core\entities\characteristic\Characteristic;
 use core\entities\characteristic\Value;
 use yii\base\Model;
+use yii\helpers\ArrayHelper;
 
 class CharacteristicsForm extends Model {
 
@@ -19,7 +20,7 @@ class CharacteristicsForm extends Model {
 
     private $_characteristic;
 
-    public function __construct(Characteristic $characteristic, Value $value = null, array $config = []) {
+    public function __construct(Characteristic $characteristic, Value $value = null, $config = []) {
         if ($value) {
             $this->value = $value->value;
         }
@@ -27,7 +28,7 @@ class CharacteristicsForm extends Model {
         parent::__construct($config);
     }
 
-    public function rules() {
+    public function rules(): array {
         return array_filter([
             $this->_characteristic->required ? ['value', 'required'] : false,
             $this->_characteristic->isString() ? ['value', 'string', 'max' => 255] : false,
@@ -37,13 +38,17 @@ class CharacteristicsForm extends Model {
         ]);
     }
 
-    public function attributeLabels() {
+    public function attributeLabels(): array {
         return [
             'value' => $this->_characteristic->name,
         ];
     }
 
-    public function getId() {
+    public function variantsList(): array {
+        return $this->_characteristic->variants ? array_combine($this->_characteristic->variants, $this->_characteristic->variants) : [];
+    }
+
+    public function getId(): int {
         return $this->_characteristic->id;
     }
 

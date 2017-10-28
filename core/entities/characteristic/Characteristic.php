@@ -23,12 +23,6 @@ class Characteristic extends ActiveRecord {
     const TYPE_FLOAT = 'float';
 
     public $variants;
-    public $name;
-    public $type;
-    public $required;
-    public $default;
-    public $sort;
-    public $id;
 
     public static function create($name, $type, $required, $default, array $variants, $sort) {
         $characteristic = new static();

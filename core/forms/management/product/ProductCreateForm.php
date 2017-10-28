@@ -8,19 +8,20 @@
 
 namespace core\forms\management\product;
 
+use core\entities\brand\Brand;
 use core\entities\characteristic\Characteristic;
 use core\entities\product\Product;
 use core\forms\management\CompositeForm;
 use core\forms\management\MetaForm;
+use yii\helpers\ArrayHelper;
 
 /**
- * Class ProductCreateForm
- *
- * @property PriceForm            $price
- * @property MetaForm             $meta
- * @property CategoryForm         $categories
- * @property PhotoForm            $photos
- * @property TagsForm             $tags
+ * @property PriceForm $price
+ * @property QuantityForm $quantity
+ * @property MetaForm $meta
+ * @property CategoryForm $categories
+ * @property PhotoForm $photos
+ * @property TagsForm $tags
  * @property CharacteristicsForm[] $characteristicsValues
  */
 class ProductCreateForm extends CompositeForm {
@@ -30,15 +31,10 @@ class ProductCreateForm extends CompositeForm {
     public $description;
     public $weight;
     public $quantity;
-    public $price;
-    public $meta;
-    public $categories;
-    public $photos;
-    public $tags;
-    public $characteristicsValues;
 
     public function __construct(array $config = []) {
         $this->price = new PriceForm();
+//        $this->quantity = new QuantityForm();
         $this->meta = new MetaForm();
         $this->categories = new CategoryForm();
         $this->photos = new PhotoForm();
@@ -51,13 +47,17 @@ class ProductCreateForm extends CompositeForm {
 
     public function rules() {
         return [
-            [['brandId', 'code', 'name'], 'required'],
+            [['brandId', 'code', 'name', 'weight'], 'required'],
             [['code', 'name'], 'string', 'max' => 255],
-            [['description'], 'string'],
-            [['brandId'], 'integer'],
-            [['weight', 'quantity'], 'number'],
+            [['brandId', 'quantity'], 'integer'],
             [['code'], 'unique', 'targetClass' => Product::class],
+            ['description', 'string'],
+            ['weight', 'integer', 'min' => 0],
         ];
+    }
+
+    public function brandsList() {
+        return ArrayHelper::map(Brand::find()->orderBy('name')->asArray()->all(), 'id', 'name');
     }
 
     protected function internalForms() {
@@ -68,6 +68,7 @@ class ProductCreateForm extends CompositeForm {
             'categories',
             'tags',
             'characteristicsValues',
+//            'quantity',
         ];
     }
 }

@@ -10,6 +10,7 @@ namespace core\forms\management\characteristic;
 
 
 use core\entities\characteristic\Characteristic;
+use core\helpers\CharacteristicHelper;
 use yii\base\Model;
 
 class CharacteristicForm extends Model {
@@ -19,7 +20,7 @@ class CharacteristicForm extends Model {
     public $required;
     public $default;
     public $sort;
-    public $variants;
+    public $textVariants;
 
     private $_characteristic;
 
@@ -29,25 +30,31 @@ class CharacteristicForm extends Model {
             $this->type = $characteristic->type;
             $this->required = $characteristic->required;
             $this->default = $characteristic->default;
-            $this->variants = implode(PHP_EOL, $characteristic->variants);
+            $this->textVariants = implode(PHP_EOL, $characteristic->variants);
             $this->sort = $characteristic->sort;
             $this->_characteristic = $characteristic;
         } else {
-            $this->sort = Characteristic::find()->max('sort') +1;
+            $this->sort = Characteristic::find()->max('sort') + 1;
         }
         parent::__construct($config);
     }
+
     public function rules() {
         return [
             [['name', 'type', 'sort'], 'required'],
             [['required'], 'boolean'],
             [['default'], 'string', 'max' => 255],
-            [['variants'], 'string'],
+            [['textVariants'], 'string'],
             [['sort'], 'integer'],
             [['name'], 'unique', 'targetClass' => Characteristic::class, 'filter' => $this->_characteristic ? ['<>', 'id', $this->_characteristic->id] : null],
         ];
     }
+
     public function getVariants() {
-        return preg_split('#[\r\n]+#i', $this->variants);
+        return preg_split('#\s+#i', $this->textVariants);
+    }
+
+    public function typesList() {
+        return CharacteristicHelper::typeList();
     }
 }

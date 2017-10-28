@@ -15,8 +15,10 @@ use core\entities\product\Product;
 use core\entities\tag\Tag;
 use core\forms\management\product\CategoryForm;
 use core\forms\management\product\PhotoForm;
+use core\forms\management\product\PriceForm;
 use core\forms\management\product\ProductCreateForm;
 use core\forms\management\product\ProductEditForm;
+use core\forms\management\product\QuantityForm;
 use core\repository\BrandRepository;
 use core\repository\CategoryRepository;
 use core\repository\ProductRepository;
@@ -93,7 +95,7 @@ class ProductManagementService {
     }
 
     public function edit($id, ProductEditForm $form) {
-        /**@var Product $product*/
+        /**@var Product $product */
         $product = $this->product->getById($id);
         $brand = $this->brand->getById($form->brandId);
         $category = $this->category->getById($form->categories->main);
@@ -157,6 +159,30 @@ class ProductManagementService {
         $this->product->save($product);
     }
 
+    public function changePrice($id, PriceForm $form) {
+        $product = $this->product->getById($id);
+        $product->setPrice($form->new, $form->old);
+        $this->product->save($product);
+    }
+
+    public function changeQuantity($id, QuantityForm $form) {
+        $product = $this->product->getById($id);
+        $product->changeQuantity($form->quantity);
+        $this->product->save($product);
+    }
+
+    public function activate($id) {
+        $product = $this->product->getById($id);
+        $product->activate();
+        $this->product->save($product);
+    }
+
+    public function draft($id) {
+        $product = $this->product->getById($id);
+        $product->draft();
+        $this->product->save($product);
+    }
+
     public function addPhotos($id, PhotoForm $form) {
         /** @var Product $product */
         $product = $this->product->getById($id);
@@ -192,4 +218,5 @@ class ProductManagementService {
         $product = $this->product->getById($id);
         $this->product->delete($product);
     }
+
 }

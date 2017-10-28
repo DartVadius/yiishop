@@ -36,6 +36,7 @@
                         ['label' => 'Бренды', 'icon' => 'file-code-o', 'url' => ['shop/brand/index'], 'active' => $this->context->id === 'shop/brand'],
                         ['label' => 'Теги', 'icon' => 'file-code-o', 'url' => ['shop/tag/index'], 'active' => $this->context->id === 'shop/tag'],
                         ['label' => 'Категории', 'icon' => 'file-code-o', 'url' => ['shop/category/index'], 'active' => $this->context->id === 'shop/category'],
+                        ['label' => 'Характеристики', 'icon' => 'file-code-o', 'url' => ['shop/characteristic/index'], 'active' => $this->context->id === 'shop/characteristic'],
                     ],
 //                    ['label' => 'Пользователи', 'icon' => 'file-code-o', 'url' => ['user/index'], 'active' => Yii::$app->controller->id === 'user'],
                     ],
